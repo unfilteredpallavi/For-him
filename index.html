@@ -8,14 +8,39 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  background: radial-gradient(circle at top, #1e293b, #020617);
   color: white;
   text-align: center;
+  overflow-x: hidden;
 }
 
-h1 {
-  margin-top: 40px;
-  text-shadow: 0 0 10px #fff, 0 0 20px #ff6b81;
+/* LOCK */
+#lock {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #020617;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+input {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin: 10px;
+}
+
+button {
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: none;
+  background: #ff6b81;
+  color: white;
+  cursor: pointer;
+  margin: 5px;
 }
 
 .section {
@@ -28,13 +53,219 @@ h1 {
   backdrop-filter: blur(10px);
 }
 
-button {
-  padding: 10px 18px;
-  margin: 6px;
-  border: none;
-  border-radius: 20px;
+/* MEMORY */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 70px);
+  gap: 10px;
+  justify-content: center;
+}
+
+.card {
+  width: 70px;
+  height: 70px;
   background: #ff6b81;
-  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* STARS */
+#stars span {
+  position: fixed;
+  width: 2px;
+  height: 2px;
+  background: white;
+  animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: 0.2; }
+  to { opacity: 1; }
+}
+
+/* HEARTS */
+#hearts span {
+  position: fixed;
+  color: #ff6b81;
+  animation: floatUp 5s linear infinite;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(100vh); opacity: 1; }
+  100% { transform: translateY(-10vh); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🎵 BACKGROUND MUSIC -->
+<iframe width="0" height="0"
+src="https://www.youtube.com/embed/nyuo9-OjNNg?autoplay=1&mute=1&loop=1&playlist=nyuo9-OjNNg"
+frameborder="0" allow="autoplay">
+</iframe>
+
+<div id="stars"></div>
+<div id="hearts"></div>
+
+<!-- LOCK -->
+<div id="lock">
+  <h2>Only for you 🤍</h2>
+  <input type="password" id="pass" placeholder="Enter password">
+  <button onclick="unlock()">Enter</button>
+  <p id="wrong"></p>
+</div>
+
+<!-- MAIN -->
+<div id="main" style="display:none;">
+
+<h1>This little place is for you 🤍</h1>
+<p>Since [your date]</p>
+
+<!-- MEMORY GAME -->
+<div class="section">
+<h2>🧩 Memory</h2>
+<div class="grid" id="grid"></div>
+</div>
+
+<!-- QUIZ -->
+<div class="section">
+<h2>❓ Questions</h2>
+<p id="question"></p>
+<div id="options"></div>
+<p id="result"></p>
+</div>
+
+<!-- OPEN WHEN -->
+<div class="section">
+<h2>💌 Open when...</h2>
+<button onclick="msg('sad')">You're sad</button>
+<button onclick="msg('miss')">You miss me</button>
+<button onclick="msg('happy')">You're happy</button>
+<p id="letter"></p>
+</div>
+
+<!-- RANDOM MESSAGE -->
+<div class="section">
+<h2>💖 Click for message</h2>
+<button onclick="randomMsg()">Click</button>
+<p id="rand"></p>
+</div>
+
+</div>
+
+<script>
+// PASSWORD
+function unlock(){
+  let p=document.getElementById("pass").value;
+  if(p==="1234"){
+    document.getElementById("lock").style.display="none";
+    document.getElementById("main").style.display="block";
+  } else {
+    document.getElementById("wrong").innerText="Wrong password";
+  }
+}
+
+// STARS
+for (let i = 0; i < 60; i++) {
+  let s = document.createElement("span");
+  s.style.left = Math.random() * 100 + "vw";
+  s.style.top = Math.random() * 100 + "vh";
+  document.getElementById("stars").appendChild(s);
+}
+
+// HEARTS
+setInterval(()=>{
+ let h=document.createElement("span");
+ h.innerText="❤";
+ h.style.left=Math.random()*100+"vw";
+ document.getElementById("hearts").appendChild(h);
+ setTimeout(()=>h.remove(),5000);
+},500);
+
+// MEMORY GAME
+let emojis=["🤍","🌙","✨","💫","💖","🌸","🤍","🌙","✨","💫","💖","🌸"];
+emojis.sort(()=>0.5-Math.random());
+
+let first=null;
+let grid=document.getElementById("grid");
+
+emojis.forEach(e=>{
+ let c=document.createElement("div");
+ c.className="card";
+ c.innerText="?";
+
+ c.onclick=()=>{
+  c.innerText=e;
+  if(!first) first=c;
+  else{
+    if(first.innerText!==c.innerText){
+      setTimeout(()=>{c.innerText="?";first.innerText="?";first=null},700);
+    } else first=null;
+  }
+ };
+ grid.appendChild(c);
+});
+
+// QUIZ
+let q=[
+["Who likes you the most?",["Me","Also me"],"Me"],
+["Who misses you?",["Me","Still me"],"Me"],
+["Who made this?",["Me","Obviously me"],"Me"],
+["Who thinks about you randomly?",["Me","Always me"],"Me"],
+["Who is lucky?",["You","Me"],"You"]
+];
+
+let i=0;
+function loadQ(){
+ document.getElementById("question").innerText=q[i][0];
+ let opt=document.getElementById("options");
+ opt.innerHTML="";
+ q[i][1].forEach(o=>{
+  let b=document.createElement("button");
+  b.innerText=o;
+  b.onclick=()=>check(o);
+  opt.appendChild(b);
+ });
+}
+function check(o){
+ document.getElementById("result").innerText=
+  o===q[i][2]?"Correct 🤍":"Wrong 😤";
+ i++;
+ if(i<q.length)setTimeout(loadQ,800);
+ else document.getElementById("question").innerText="Done 🤍";
+}
+loadQ();
+
+// OPEN WHEN
+function msg(type){
+ let text={
+  sad:"I'm here for you. Always.",
+  miss:"I miss you more than I say.",
+  happy:"I love seeing you happy."
+ };
+ document.getElementById("letter").innerText=text[type];
+}
+
+// RANDOM MESSAGE
+function randomMsg(){
+ let msgs=[
+ "You matter to me",
+ "I like you more than I show",
+ "You're my favorite person",
+ "I thought of you today",
+ "You make everything better"
+ ];
+ document.getElementById("rand").innerText=
+  msgs[Math.floor(Math.random()*msgs.length)];
+}
+</script>
+
+</body>
+</html>  color: white;
   cursor: pointer;
 }
 
