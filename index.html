@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For You 🤍</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(#1a1a2e, #16213e);
+  color: white;
+  text-align: center;
+}
+
+.section {
+  margin: 40px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 80px);
+  gap: 10px;
+  justify-content: center;
+}
+
+.card {
+  width: 80px;
+  height: 80px;
+  background: #e94560;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  background: #e94560;
+  color: white;
+  cursor: pointer;
+}
+
+#heart {
+  font-size: 40px;
+  position: relative;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>This little place is for you 🤍</h1>
+
+<audio autoplay loop>
+<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
+
+<!-- MEMORY GAME -->
+<div class="section">
+<h2>🧩 Match these</h2>
+<div class="grid" id="grid"></div>
+</div>
+
+<!-- QUIZ -->
+<div class="section">
+<h2>❓ Questions</h2>
+<p id="question"></p>
+<div id="options"></div>
+<p id="result"></p>
+</div>
+
+<!-- HEART GAME -->
+<div class="section">
+<h2>❤️ Catch this</h2>
+<p>Click the heart 5 times</p>
+<div id="heart">❤️</div>
+<p id="heartMsg"></p>
+</div>
+
+<script>
+// MEMORY GAME
+let emojis = ["🤍","🌙","✨","💫","🤍","🌙","✨","💫"];
+emojis.sort(() => 0.5 - Math.random());
+
+let first = null;
+const grid = document.getElementById("grid");
+
+emojis.forEach((emoji) => {
+  let card = document.createElement("div");
+  card.classList.add("card");
+  card.dataset.value = emoji;
+  card.innerText = "?";
+
+  card.onclick = () => {
+    card.innerText = emoji;
+
+    if (!first) {
+      first = card;
+    } else {
+      if (first.dataset.value === card.dataset.value) {
+        first = null;
+      } else {
+        setTimeout(() => {
+          first.innerText = "?";
+          card.innerText = "?";
+          first = null;
+        }, 800);
+      }
+    }
+  };
+
+  grid.appendChild(card);
+});
+
+// QUIZ
+let questions = [
+  { q: "Who likes you the most?", options: ["Me", "Also me"], answer: "Me" },
+  { q: "Who is always thinking about you?", options: ["Me", "Still me"], answer: "Me" },
+  { q: "Who made this?", options: ["Me", "Obviously me"], answer: "Me" }
+];
+
+let current = 0;
+
+function loadQuestion() {
+  document.getElementById("question").innerText = questions[current].q;
+  let optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  questions[current].options.forEach(opt => {
+    let btn = document.createElement("button");
+    btn.innerText = opt;
+    btn.onclick = () => checkAnswer(opt);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(opt) {
+  if (opt === questions[current].answer) {
+    document.getElementById("result").innerText = "Correct 🤍";
+  } else {
+    document.getElementById("result").innerText = "Wrong 😤";
+  }
+
+  current++;
+  if (current < questions.length) {
+    setTimeout(loadQuestion, 1000);
+  } else {
+    setTimeout(() => {
+      document.getElementById("question").innerText = "That’s it 🤍";
+      document.getElementById("options").innerHTML = "";
+    }, 1000);
+  }
+}
+
+loadQuestion();
+
+// HEART GAME
+let count = 0;
+let heart = document.getElementById("heart");
+
+heart.onclick = () => {
+  count++;
+  heart.style.left = Math.random() * 200 - 100 + "px";
+  heart.style.top = Math.random() * 200 - 100 + "px";
+
+  if (count === 5) {
+    document.getElementById("heartMsg").innerText =
+      "Okay fine, you caught me too 🤍";
+  }
+};
+</script>
+
+</body>
+</html><p id="heartMsg"></p>
+</div>
+
+<script>
+// MEMORY GAME
+let emojis = ["🤍","🌙","✨","💫","🤍","🌙","✨","💫"];
+emojis.sort(() => 0.5 - Math.random());
+
+let first = null;
+const grid = document.getElementById("grid");
+
+emojis.forEach((emoji) => {
+  let card = document.createElement("div");
+  card.classList.add("card");
+  card.dataset.value = emoji;
+  card.innerText = "?";
+
+  card.onclick = () => {
+    card.innerText = emoji;
+
+    if (!first) {
+      first = card;
+    } else {
+      if (first.dataset.value === card.dataset.value) {
+        first = null;
+      } else {
+        setTimeout(() => {
+          first.innerText = "?";
+          card.innerText = "?";
+          first = null;
+        }, 800);
+      }
+    }
+  };
+
+  grid.appendChild(card);
+});
+
+// QUIZ
+let questions = [
+  { q: "Who likes you the most?", options: ["Me", "Also me"], answer: "Me" },
+  { q: "Who is always thinking about you?", options: ["Me", "Still me"], answer: "Me" },
+  { q: "Who made this?", options: ["Me", "Obviously me"], answer: "Me" }
+];
+
+let current = 0;
+
+function loadQuestion() {
+  document.getElementById("question").innerText = questions[current].q;
+  let optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  questions[current].options.forEach(opt => {
+    let btn = document.createElement("button");
+    btn.innerText = opt;
+    btn.onclick = () => checkAnswer(opt);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(opt) {
+  if (opt === questions[current].answer) {
+    document.getElementById("result").innerText = "Correct 🤍";
+  } else {
+    document.getElementById("result").innerText = "Wrong 😤";
+  }
+
+  current++;
+  if (current < questions.length) {
+    setTimeout(loadQuestion, 1000);
+  } else {
+    setTimeout(() => {
+      document.getElementById("question").innerText = "That’s it 🤍";
+      document.getElementById("options").innerHTML = "";
+    }, 1000);
+  }
+}
+
+loadQuestion();
+
+// HEART GAME
+let count = 0;
+let heart = document.getElementById("heart");
+
+heart.onclick = () => {
+  count++;
+  heart.style.left = Math.random() * 200 - 100 + "px";
+  heart.style.top = Math.random() * 200 - 100 + "px";
+
+  if (count === 5) {
+    document.getElementById("heartMsg").innerText =
+      "Okay fine, you caught me too 🤍";
+  }
+};
+</script>
+
+</body>
+</html>
