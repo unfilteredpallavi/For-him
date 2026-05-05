@@ -14,27 +14,239 @@ body {
   overflow-x: hidden;
 }
 
-/* LOCK SCREEN */
-#lock {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #020617;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 9999;
-}
-
 /* MAIN */
 #main {
-  display: none;
   padding-bottom: 50px;
 }
 
+input {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin: 10px;
+}
+
+button {
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: none;
+  background: #ff6b81;
+  color: white;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.section {
+  margin: 25px auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 420px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+}
+
+/* MEMORY */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 70px);
+  gap: 10px;
+  justify-content: center;
+}
+
+.card {
+  width: 70px;
+  height: 70px;
+  background: #ff6b81;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 10px;
+}
+
+/* CATCH GAME */
+#catchArea {
+  height: 150px;
+  position: relative;
+}
+
+#heart {
+  position: absolute;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+/* STARS */
+#stars span {
+  position: fixed;
+  width: 2px;
+  height: 2px;
+  background: white;
+  animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+  from {opacity: 0.2;}
+  to {opacity: 1;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- MUSIC -->
+<div class="section">
+<h3>🎧 Tap for music</h3>
+<button onclick="playMusic()">Play</button>
+<audio id="music" loop>
+<source src="https://www.youtube.com/embed/nyuo9-OjNNg?autoplay=1&mute=1&loop=1&playlist=nyuo9-OjNNg">
+</audio>
+</div>
+
+<div id="stars"></div>
+
+<div id="main">
+
+<h1>This little place is for you 🤍</h1>
+<p>Since [your date]</p>
+
+<!-- MEMORY -->
+<div class="section">
+<h2>🧩 Memory</h2>
+<div class="grid" id="grid"></div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="section">
+<h2>❓ Questions</h2>
+<p id="question"></p>
+<div id="options"></div>
+<p id="result"></p>
+</div>
+
+<!-- CATCH GAME -->
+<div class="section">
+<h2>❤️ Catch me</h2>
+<div id="catchArea">
+<span id="heart">❤️</span>
+</div>
+<p id="score">Score: 0</p>
+</div>
+
+<!-- RANDOM MSG -->
+<div class="section">
+<h2>💌 Message</h2>
+<button onclick="randomMsg()">Click</button>
+<p id="msg"></p>
+</div>
+
+</div>
+
+<script>
+// MUSIC
+function playMusic(){
+ document.getElementById("music").play();
+}
+
+// STARS
+for(let i=0;i<60;i++){
+ let s=document.createElement("span");
+ s.style.left=Math.random()*100+"vw";
+ s.style.top=Math.random()*100+"vh";
+ document.getElementById("stars").appendChild(s);
+}
+
+// MEMORY
+let emojis=["🤍","🌙","✨","💫","💖","🌸","🤍","🌙","✨","💫","💖","🌸"];
+emojis.sort(()=>0.5-Math.random());
+let first=null;
+
+emojis.forEach(e=>{
+ let c=document.createElement("div");
+ c.className="card";
+ c.innerText="?";
+
+ c.onclick=()=>{
+  c.innerText=e;
+  if(!first) first=c;
+  else{
+   if(first.innerText!==c.innerText){
+    setTimeout(()=>{
+     c.innerText="?";
+     first.innerText="?";
+     first=null;
+    },700);
+   } else first=null;
+  }
+ };
+ document.getElementById("grid").appendChild(c);
+});
+
+// QUESTIONS
+let q=[
+["Who loves you?",["Me","Also me"],"Me"],
+["Who misses you?",["Me","Still me"],"Me"],
+["Who made this?",["Me","Obviously me"],"Me"],
+["Who thinks about you?",["Me","Always me"],"Me"],
+["Who is lucky?",["You","Me"],"You"]
+];
+
+let i=0;
+function loadQ(){
+ document.getElementById("question").innerText=q[i][0];
+ let opt=document.getElementById("options");
+ opt.innerHTML="";
+ q[i][1].forEach(o=>{
+  let b=document.createElement("button");
+  b.innerText=o;
+  b.onclick=()=>check(o);
+  opt.appendChild(b);
+ });
+}
+
+function check(o){
+ document.getElementById("result").innerText=
+ o===q[i][2]?"Correct 🤍":"Wrong 😤";
+ i++;
+ if(i<q.length)setTimeout(loadQ,800);
+ else document.getElementById("question").innerText="Done 🤍";
+}
+loadQ();
+
+// CATCH GAME
+let heart=document.getElementById("heart");
+let score=0;
+
+heart.onclick=()=>{
+ score++;
+ document.getElementById("score").innerText="Score: "+score;
+ moveHeart();
+};
+
+function moveHeart(){
+ heart.style.left=Math.random()*80+"%";
+ heart.style.top=Math.random()*80+"%";
+}
+moveHeart();
+
+// RANDOM MSG
+function randomMsg(){
+ let msgs=[
+ "You matter to me",
+ "I like you more than I show",
+ "You're my favorite person",
+ "I thought of you today",
+ "You make everything better"
+ ];
+ document.getElementById("msg").innerText=
+ msgs[Math.floor(Math.random()*msgs.length)];
+}
+</script>
+
+</body>
+</html>
 input {
   padding: 10px;
   border-radius: 10px;
