@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For You 🤍</title>
 
 <style>
@@ -11,28 +12,18 @@ body {
   background: radial-gradient(circle at top, #0f172a, #020617);
   color: white;
   text-align: center;
-  overflow-x: hidden;
 }
 
-/* STARS BACKGROUND */
-#stars span {
-  position: fixed;
-  width: 2px;
-  height: 2px;
-  background: white;
-  animation: twinkle 2s infinite alternate;
+/* MUSIC BAR */
+.music-bar {
+  position: sticky;
+  top: 0;
+  background: rgba(0,0,0,0.5);
+  padding: 10px;
+  backdrop-filter: blur(10px);
 }
 
-@keyframes twinkle {
-  from {opacity: 0.2;}
-  to {opacity: 1;}
-}
-
-/* MAIN */
-#main {
-  padding: 20px;
-}
-
+/* SECTIONS */
 .section {
   margin: 25px auto;
   padding: 20px;
@@ -40,7 +31,6 @@ body {
   max-width: 420px;
   background: rgba(255,255,255,0.05);
   border-radius: 20px;
-  backdrop-filter: blur(12px);
 }
 
 button {
@@ -50,7 +40,6 @@ button {
   background: #ff6b81;
   color: white;
   cursor: pointer;
-  margin: 5px;
 }
 
 /* MEMORY */
@@ -69,46 +58,37 @@ button {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 20px;
   border-radius: 10px;
 }
 
-/* CATCH GAME */
-#catchArea {
-  height: 150px;
-  position: relative;
-  overflow: hidden;
-}
-
-#heart {
-  position: absolute;
-  font-size: 25px;
-  cursor: pointer;
+/* CERTIFICATE */
+.certificate {
+  background: white;
+  color: black;
+  padding: 20px;
+  border-radius: 15px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="stars"></div>
+<!-- 🎧 MUSIC -->
+<div class="music-bar">
+  <button onclick="toggleMusic()">▶️ / ⏸</button>
+  <input type="range" min="0" max="1" step="0.1" onchange="setVolume(this.value)">
+</div>
 
-<div id="main">
+<audio id="music" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
 
 <h1>This little place is for you 🤍</h1>
 <p>Since [your date]</p>
 
-<!-- MUSIC -->
-<div class="section">
-<h3>🎧 Tap for music</h3>
-<button onclick="playMusic()">Play</button>
-<audio id="music" loop>
-<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
-</audio>
-</div>
-
 <!-- MEMORY -->
 <div class="section">
-<h2>🧩 Memory Game</h2>
+<h2>🧩 Memory</h2>
 <div class="grid" id="grid"></div>
 </div>
 
@@ -120,44 +100,40 @@ button {
 <p id="result"></p>
 </div>
 
-<!-- CATCH GAME -->
-<div class="section">
-<h2>❤️ Catch me</h2>
-<div id="catchArea">
-<span id="heart">❤️</span>
-</div>
-<p id="score">Score: 0</p>
-</div>
-
-<!-- RANDOM MESSAGE -->
+<!-- MESSAGE -->
 <div class="section">
 <h2>💌 Message</h2>
 <button onclick="randomMsg()">Click</button>
 <p id="msg"></p>
 </div>
 
+<!-- CERTIFICATE -->
+<div class="section">
+<h2>📜 Certificate</h2>
+<div class="certificate">
+<h2>Ansh</h2>
+<p>Best Boyfriend Ever 🤍</p>
+</div>
 </div>
 
 <script>
 // MUSIC
-function playMusic(){
- document.getElementById("music").play();
+let playing=false;
+function toggleMusic(){
+ let m=document.getElementById("music");
+ if(playing){ m.pause(); playing=false; }
+ else { m.play(); playing=true; }
+}
+function setVolume(v){
+ document.getElementById("music").volume=v;
 }
 
-// STARS
-for(let i=0;i<60;i++){
- let s=document.createElement("span");
- s.style.left=Math.random()*100+"vw";
- s.style.top=Math.random()*100+"vh";
- document.body.appendChild(s);
-}
+// MEMORY
+let arr=["💖","✨","🌙","💫","💖","✨","🌙","💫"];
+arr.sort(()=>0.5-Math.random());
 
-// MEMORY GAME
-let emojis=["🤍","🌙","✨","💫","💖","🌸","🤍","🌙","✨","💫","💖","🌸"];
-emojis.sort(()=>0.5-Math.random());
 let first=null;
-
-emojis.forEach(e=>{
+arr.forEach(e=>{
  let c=document.createElement("div");
  c.className="card";
  c.innerText="?";
@@ -167,11 +143,7 @@ emojis.forEach(e=>{
   if(!first) first=c;
   else{
    if(first.innerText!==c.innerText){
-    setTimeout(()=>{
-     c.innerText="?";
-     first.innerText="?";
-     first=null;
-    },700);
+    setTimeout(()=>{c.innerText="?";first.innerText="?";first=null},500);
    } else first=null;
   }
  };
@@ -180,16 +152,11 @@ emojis.forEach(e=>{
 
 // QUESTIONS
 let q=[
-["Who loves you the most?",["Me","Also me"],"Me"],
-["Who misses you?",["Me","Still me"],"Me"],
-["Who made this?",["Me","Obviously me"],"Me"],
-["Who thinks about you all the time?",["Me","Always me"],"Me"],
-["Who is lucky?",["You","Me"],"You"],
-["What are you to me?",["Everything","Just someone"],"Everything"]
+["Who loves you?",["Me","Also me"],"Me"],
+["Who misses you?",["Me","Still me"],"Me"]
 ];
 
 let i=0;
-
 function loadQ(){
  document.getElementById("question").innerText=q[i][0];
  let opt=document.getElementById("options");
@@ -201,45 +168,16 @@ function loadQ(){
   opt.appendChild(b);
  });
 }
-
 function check(o){
- document.getElementById("result").innerText=
- o===q[i][2]?"Correct 🤍":"Wrong 😤";
+ document.getElementById("result").innerText=o===q[i][2]?"Correct":"Wrong";
  i++;
  if(i<q.length)setTimeout(loadQ,800);
- else document.getElementById("question").innerText="Done 🤍";
 }
-
 loadQ();
 
-// CATCH GAME
-let heart=document.getElementById("heart");
-let score=0;
-
-function moveHeart(){
- heart.style.left=Math.random()*70+"%";
- heart.style.top=Math.random()*70+"%";
-}
-
-heart.onclick=()=>{
- score++;
- document.getElementById("score").innerText="Score: "+score;
- moveHeart();
-};
-
-moveHeart();
-
-// RANDOM MESSAGE
+// MESSAGE
 function randomMsg(){
- let msgs=[
- "You matter to me",
- "I like you more than I show",
- "You're my favorite person",
- "I thought of you today",
- "You make everything better",
- "I’d choose you again",
- "You feel like home"
- ];
+ let msgs=["You matter to me","You're special","I like you"];
  document.getElementById("msg").innerText=
  msgs[Math.floor(Math.random()*msgs.length)];
 }
